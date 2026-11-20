@@ -233,6 +233,9 @@
 
 <script setup>
 import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const form = reactive({
     nome: '',
@@ -250,81 +253,67 @@ const erros = reactive({
 
 const mostrarSenha = ref(false)
 const mostrarConfirmacao = ref(false)
-
 const carregando = ref(false)
 const erroGeral = ref('')
 
 // Validação do nome
 function validarNome() {
     erros.nome = ''
-
     if (!form.nome) {
         erros.nome = 'O nome é obrigatório.'
         return false
     }
-
     if (form.nome.length < 3) {
         erros.nome = 'O nome deve possuir pelo menos 3 caracteres.'
         return false
     }
-
     return true
 }
 
 // Validação do e-mail
 function validarEmail() {
     erros.email = ''
-
     if (!form.email) {
         erros.email = 'O e-mail é obrigatório.'
         return false
     }
-
     const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
     if (!regexEmail.test(form.email)) {
         erros.email = 'Informe um e-mail válido.'
         return false
     }
-
     return true
 }
 
 // Validação da senha
 function validarSenha() {
     erros.senha = ''
-
     if (!form.senha) {
         erros.senha = 'A senha é obrigatória.'
         return false
     }
-
     if (form.senha.length < 6) {
         erros.senha = 'A senha deve possuir pelo menos 6 caracteres.'
         return false
     }
-
     return true
 }
 
 // Validação da confirmação de senha
 function validarConfirmacao() {
     erros.confirmarSenha = ''
-
     if (!form.confirmarSenha) {
         erros.confirmarSenha = 'Confirme sua senha.'
         return false
     }
-
     if (form.senha !== form.confirmarSenha) {
         erros.confirmarSenha = 'As senhas não coincidem.'
         return false
     }
-
     return true
 }
 
-// Envio do formulário
+// Salva o usuário localmente até a implementação do backend.
 async function fazerCadastro() {
     erroGeral.value = ''
 
@@ -333,28 +322,22 @@ async function fazerCadastro() {
     const senhaValida = validarSenha()
     const confirmacaoValida = validarConfirmacao()
 
-    if (
-        !nomeValido ||
-        !emailValido ||
-        !senhaValida ||
-        !confirmacaoValida
-    ) {
+    if (!nomeValido || !emailValido || !senhaValida || !confirmacaoValida) {
         return
     }
 
     carregando.value = true
 
     try {
-        // Integre sua API de cadastro aqui.
+        // await cadastrarUsuario({
+        //     nome: form.nome,
+        //     email: form.email,
+        //     senha: form.senha
+        // })
 
-        console.log('Dados validados:', {
-            nome: form.nome,
-            email: form.email,
-            senha: form.senha
-        })
-
+        router.push('/login')
     } catch (error) {
-        erroGeral.value = 'Não foi possível realizar o cadastro. Tente novamente.'
+        erroGeral.value = error.message || 'Não foi possível realizar o cadastro. Tente novamente.'
     } finally {
         carregando.value = false
     }

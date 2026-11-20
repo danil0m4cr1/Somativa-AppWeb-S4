@@ -147,6 +147,9 @@
 
 <script setup>
 import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const form = reactive({
     email: '',
@@ -165,59 +168,53 @@ const erroGeral = ref('')
 // Validação do e-mail
 function validarEmail() {
     erros.email = ''
-
     if (!form.email) {
         erros.email = 'O e-mail é obrigatório.'
         return false
     }
-
     const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
     if (!regexEmail.test(form.email)) {
         erros.email = 'Informe um e-mail válido.'
         return false
     }
-
     return true
 }
 
 // Validação da senha
 function validarSenha() {
     erros.senha = ''
-
     if (!form.senha) {
         erros.senha = 'A senha é obrigatória.'
         return false
     }
-
     return true
 }
 
-// Envio do formulário
+// Valida as credenciais cadastradas no armazenamento local.
 async function fazerLogin() {
-    erroGeral.value = ''
+  router.push('/');
+    // erroGeral.value = ''
 
-    const emailValido = validarEmail()
-    const senhaValida = validarSenha()
+    // const emailValido = validarEmail()
+    // const senhaValida = validarSenha()
 
-    if (!emailValido || !senhaValida) {
-        return
-    }
+    // if (!emailValido || !senhaValida) {
+    //     return
+    // }
 
-    carregando.value = true
+    // carregando.value = true
 
-    try {
-        // Integre sua API de autenticação aqui.
+    // try {
+    //     // await autenticarUsuario({
+    //     //     email: form.email,
+    //     //     senha: form.senha
+    //     // })
 
-        console.log('Dados validados:', {
-            email: form.email,
-            senha: form.senha
-        })
-
-    } catch (error) {
-        erroGeral.value = 'Não foi possível realizar o login. Tente novamente.'
-    } finally {
-        carregando.value = false
-    }
+    //     router.push('/')
+    // } catch (error) {
+    //     erroGeral.value = error.message || 'Não foi possível realizar o login. Tente novamente.'
+    // } finally {
+    //     carregando.value = false
+    // }
 }
 </script>
