@@ -7,9 +7,7 @@
       class="mx-auto min-h-[calc(100vh-68px)] w-full max-w-[1440px] px-3 pb-16 pt-10 sm:px-6 sm:pb-20 sm:pt-12 md:min-h-[calc(100vh-82px)] md:px-[5.5%]"
     >
       <!-- Cabeçalho -->
-      <div
-        class="mb-7 flex items-end justify-between gap-3 sm:mb-8"
-      >
+      <div class="mb-7 flex items-end justify-between gap-3 sm:mb-8">
         <div>
           <h1 class="mt-2 text-[28px] font-bold tracking-[-1.4px] sm:text-4xl">
             Minha lista
@@ -21,10 +19,41 @@
         </span>
       </div>
 
+      <!-- Carregamento -->
+      <div
+        v-if="carregando"
+        class="flex min-h-[350px] flex-col items-center justify-center gap-4 text-center"
+      >
+        <div class="h-10 w-10 animate-spin rounded-full border-4 border-[#333] border-t-[#e50914]"></div>
+        <p class="text-sm text-[#999]">Carregando seus favoritos...</p>
+      </div>
+
+      <!-- Erro -->
+      <div
+        v-else-if="erro"
+        class="flex min-h-[350px] flex-col items-center justify-center px-4 text-center"
+      >
+        <h2 class="text-lg font-bold text-white">
+          Não foi possível carregar seus favoritos
+        </h2>
+
+        <p class="mt-3 text-sm text-[#999]">
+          {{ erro }}
+        </p>
+
+        <button
+          type="button"
+          @click="carregarFilmes"
+          class="mt-6 rounded-[5px] bg-[#e50914] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#bd0710]"
+        >
+          Tentar novamente
+        </button>
+      </div>
+
       <!-- Lista de favoritos -->
       <div
-        v-if="lista.length"
-        class="movie-grid grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 sm:gap-x-4 sm:gap-y-7 lg:grid-cols-4 lg:gap-x-[19px] lg:gap-y-8"
+        v-else-if="lista.length"
+        class="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 sm:gap-x-4 sm:gap-y-7 lg:grid-cols-4 lg:gap-x-[19px] lg:gap-y-8"
       >
         <MovieCard
           v-for="filme in lista"
@@ -60,19 +89,42 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+
 import AppHeader from '../components/appHeader.vue'
 import MovieCard from '../components/movieCard.vue'
-import { filmes } from '../data/filmes'
+
+import { buscarFilmes } from '../services/filmes'
 import { lerFavoritos, alternarFavorito } from '../services/storage'
 
+const filmes = ref([])
 const ids = ref(lerFavoritos())
 
+const carregando = ref(true)
+const erro = ref('')
+
 const lista = computed(() =>
-  filmes.filter(f => ids.value.includes(f.id))
+  filmes.value.filter(f => ids.value.includes(f.id))
 )
+
+async function carregarFilmes() {
+  carregando.value = true
+  erro.value = ''
+
+  try {
+    filmes.value = await buscarFilmes()
+    ids.value = lerFavoritos()
+  } catch (error) {
+    console.error('Erro ao carregar favoritos:', error)
+    erro.value = 'Verifique sua conexão e tente novamente.'
+  } finally {
+    carregando.value = false
+  }
+}
 
 function remover(id) {
   ids.value = alternarFavorito(id)
 }
+
+onMounted(carregarFilmes)
 </script>
