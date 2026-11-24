@@ -3,7 +3,7 @@ import axios from 'axios'
 import { obterToken } from './auth'
 
 const api = axios.create({
-    baseURL: import.meta.env.FRONTEND_API_URL,
+    baseURL: import.meta.env.FRONTEND_API_URL+'/api',
     headers: {
         'Content-Type': 'application/json'
     }
