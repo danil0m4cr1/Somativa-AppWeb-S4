@@ -148,6 +148,7 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { autenticarUsuario } from '../services/auth'
 
 const router = useRouter()
 
@@ -192,29 +193,33 @@ function validarSenha() {
 
 // Valida as credenciais cadastradas no armazenamento local.
 async function fazerLogin() {
-  router.push('/');
-    // erroGeral.value = ''
+    erroGeral.value = ''
 
-    // const emailValido = validarEmail()
-    // const senhaValida = validarSenha()
+    const emailValido = validarEmail()
+    const senhaValida = validarSenha()
 
-    // if (!emailValido || !senhaValida) {
-    //     return
-    // }
+    if (!emailValido || !senhaValida) {
+        return
+    }
 
-    // carregando.value = true
+    carregando.value = true
 
-    // try {
-    //     // await autenticarUsuario({
-    //     //     email: form.email,
-    //     //     senha: form.senha
-    //     // })
+    try {
+        await autenticarUsuario({
+            email: form.email,
+            password: form.senha
+        })
 
-    //     router.push('/')
-    // } catch (error) {
-    //     erroGeral.value = error.message || 'Não foi possível realizar o login. Tente novamente.'
-    // } finally {
-    //     carregando.value = false
-    // }
+        router.push('/')
+    } catch (error) {
+        const dados = error.response?.data
+
+        erroGeral.value =
+            dados?.detail ||
+            'E-mail ou senha inválidos.'
+
+    } finally {
+        carregando.value = false
+    }
 }
 </script>

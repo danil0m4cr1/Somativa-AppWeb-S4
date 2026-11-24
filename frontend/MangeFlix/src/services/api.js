@@ -1,10 +1,22 @@
-import axios from 'axios';
+
+import axios from 'axios'
+import { obterToken } from './auth'
 
 const api = axios.create({
-    baseURL: "http://127.0.0.1:8080/api",
+    baseURL: 'http://127.0.0.1:8080/api',
     headers: {
-        "Content-Type": "application/json"
+        'Content-Type': 'application/json'
     }
-});
+})
 
-export default api;
+api.interceptors.request.use(config => {
+    const token = obterToken()
+
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`
+    }
+
+    return config
+})
+
+export default api

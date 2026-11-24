@@ -234,9 +234,9 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { cadastrarUsuario } from '../services/auth'
 
 const router = useRouter()
-
 const form = reactive({
     nome: '',
     email: '',
@@ -329,15 +329,24 @@ async function fazerCadastro() {
     carregando.value = true
 
     try {
-        // await cadastrarUsuario({
-        //     nome: form.nome,
-        //     email: form.email,
-        //     senha: form.senha
-        // })
+        await cadastrarUsuario({
+            email: form.email,
+            password: form.senha
+        })
 
         router.push('/login')
     } catch (error) {
-        erroGeral.value = error.message || 'Não foi possível realizar o cadastro. Tente novamente.'
+        const dados = error.response?.data
+
+        if (dados?.email) {
+            erroGeral.value = dados.email[0]
+        } else if (dados?.password) {
+            erroGeral.value = dados.password[0]
+        } else {
+            erroGeral.value =
+                dados?.detail ||
+                'Não foi possível realizar o cadastro.'
+        }
     } finally {
         carregando.value = false
     }
