@@ -32,7 +32,7 @@ DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'somativa-appweb-s4-production.up.railway.app']
 
-CSRF_TRUSTED_ORIGINS = ['https://somativa-appweb-s4-production.up.railway.app']
+CSRF_TRUSTED_ORIGINS = ['https://somativa-app-web-s4.vercel.app']
 
 
 # Application definition
@@ -51,9 +51,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -74,7 +74,7 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
 }
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173", "https://somativa-appweb-s4-production.up.railway.app"]  # URL do seu front
+CORS_ALLOWED_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173", "https://somativa-app-web-s4.vercel.app"]  # URL do seu front
 
 ROOT_URLCONF = 'streaming.urls'
 
